@@ -79,7 +79,9 @@ function parseHar(har) {
   for(var i in entries) {
     var entry = entries[i];
 
-    if(argv.m && !entry.response.content.mimeType.match(argv.m)) continue;
+    if(argv.m && (!entry.response.content || 
+            !entry.response.content.mimeType || 
+            !entry.response.content.mimeType.match(argv.m))) continue;
     if(argv.u && !entry.request.url.match(argv.u)) continue;
     if(filters) {
       var cont = false;
