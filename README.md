@@ -18,6 +18,9 @@ Usage example, group by response.status and filter by mime matches to image:
     │ all │ 7ms  │ 831ms │ 189ms │ 616   │ 116520ms │
     └─────┴──────┴───────┴───────┴───────┴──────────┘
 
+Install: npm install har_timing
+
+
   [HAR]: http://httparchive.org/
 
 
