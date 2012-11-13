@@ -4,7 +4,7 @@ har_timing
 Get timing stats from HTTP Archive Format, known as [HAR].
 HAR supports in chromium or google chrome via developer tools and firefox with firebug addon.
 
-Usage: har_timing <har> [opts]
+Usage: har_timing \<har\> \[opts\]
 
     <har> may be gzipped. It's detected by file extension .gz
 
