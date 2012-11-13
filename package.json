@@ -1,0 +1,20 @@
+{
+  "name": "har_timing",
+  "version": "0.0.1",
+  "description": "Harvest timing stat from HTTP Archive Format (HAR)",
+  "directories": {
+    "test": "test"
+  },
+  "bin": { "har_timing": "./bin/har_timing" },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/narma/har_timing.git"
+  },
+  "author": "Sergey Rublev",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "dependencies": {"cli-table": "", "optimist": ""}
+}
