@@ -5,6 +5,7 @@
   "directories": {
     "test": "test"
   },
+  "keywords": ["HAR", "HTTP Archive Format"],
   "bin": { "har_timing": "./bin/har_timing" },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,8 +14,10 @@
     "type": "git",
     "url": "git://github.com/narma/har_timing.git"
   },
+  "bugs": "https://github.com/narma/har_timing/issues",
   "author": "Sergey Rublev",
   "license": "BSD",
   "readmeFilename": "README.md",
+  "engines" : { "node" : ">=0.6.0" },
   "dependencies": {"cli-table": "", "optimist": ""}
 }
