@@ -1,0 +1,124 @@
+#!/usr/bin/env node
+var zlib = require('zlib');
+var fs = require('fs');
+var Table = require('cli-table');
+
+var Stat = require('../lib/stat');
+
+var optimist = require('optimist')
+            .usage('Parse HTTP Archive Format and print timing stat' +
+                  '\nUsage: $0 <har> [opts]' + 
+                  "\n<har> may be gzipped. It's detected by file extension .gz")
+            .alias('m', 'mime')
+            .describe('m', 'Filter by response mime/type. Ex: -m image')
+            .alias('u', 'url')
+            .describe('u', 'Filter by request url. Ex: -u assets')
+            .alias('p', 'prop')
+            .describe('p', 'Filter by property of entry har, can pass many times. For ex: request.method=GET')
+            .alias('g', 'group')
+            .describe('g', 'Group by this property')
+            .default('g', 'response.status')
+            .demand('g')
+
+var argv = optimist.argv;
+
+if(argv._.length != 1) {
+  console.error(optimist.help());
+  process.exit(1);
+}
+
+var har_file = argv._[0];
+if(har_file.match('\.gz$')) {
+  var gunzip = zlib.createGunzip();
+  var inp = fs.createReadStream(har_file);
+  var res = inp.pipe(gunzip);
+  var har_content = '';
+  res.on('data', function(data) {
+    har_content += data.toString();
+  });
+  res.on('end', function() {
+    var har = JSON.parse(har_content);
+    parseHar(har);
+  });
+}
+else { 
+  fs.readFile(har_file, 'UTF-8', function(err, content) {
+    var har = JSON.parse(content);
+    parseHar(har);
+  });
+}
+
+function get_prop(object, prop_keys) {
+  if(!(prop_keys instanceof Array)) {
+    prop_keys = prop_keys.split('.');
+  }
+  var res = object;
+  for(var i in prop_keys) {
+    var key = prop_keys[i];
+    res = res[key];
+  }
+  return res;
+}
+
+var props = [];
+if(argv.p) {
+  if(!argv.p.forEach) argv.p = [argv.p];
+      argv.p.forEach(function(prop) {
+        var splitted = prop.split('=');
+        var key_props = splitted[0].split('.');
+        props.push([key_props, splitted[1]]);
+      });
+}
+
+
+function parseHar(har) {
+  var entries = har['log']['entries'];
+
+  stat = new Stat.Group();
+
+  for(var i in entries) {
+    var entry = entries[i];
+
+    if(argv.m && !entry.response.content.mimeType.match(argv.m)) continue;
+    if(argv.u && !entry.request.url.match(argv.u)) continue;
+    if(props) {
+      var cont = false;
+      for(i in props) {
+        var prop = props[i];
+        var keys = prop[0];
+        var val = prop[1];
+        
+        var cur_val = get_prop(entry, keys);
+        if(!cur_val.match(val)) {
+          cont = true;
+          break;
+        }
+      }
+      if(cont) continue;
+    }
+
+    var status = entry.response.status;
+    var group_by = get_prop(entry, argv.g);
+    var time = entry.time;
+
+    stat.consume(time, group_by);
+  }
+
+  stat.finish();
+
+  var table = new Table({ head: ["", "Min", "Max", "Avg", "Count", "Sum"] });
+ 
+  function prepare_row(row) {
+    var new_row = [];
+    for(var i in row) {
+      var val = row[i];
+      if( i != 3) val += 'ms';
+      new_row.push(val);
+    }
+    return new_row;
+  } 
+  table.push.apply(table, stat.get_rows(prepare_row));
+
+  console.log(table.toString());
+};
+
