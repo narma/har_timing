@@ -2,8 +2,16 @@ har_timing
 ==========
 
 Get timing stats from HTTP Archive Format, known as [HAR].
-
 HAR supports in chromium or google chrome via developer tools and firefox with firebug addon.
+
+Usage: har_timing <har> [opts]
+    <har> may be gzipped. It's detected by file extension .gz
+
+    Options:
+      -m, --mime    Filter by response mime/type. Ex: -m image                                      
+      -u, --url     Filter by request url. Ex: -u assets                                            
+      -f, --filter  Filter by property of entry har, can pass many times. For ex: -f request.method=GET
+      -g, --group   Group by this property                                                            [required]  [default: "response.status"]
 
 Usage example, group by response.status and filter by mime matches to image:
 
