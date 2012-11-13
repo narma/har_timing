@@ -2,7 +2,6 @@ har_timing
 ==========
 
 Get timing stats from HTTP Archive Format, known as [HAR].
-It's available via chromium in developer tools or firefox with firebug addon.
 
 HAR supports in chromium or google chrome via developer tools and firefox with firebug addon.
 
